@@ -1,11 +1,13 @@
 MAX_NAME_LEN = 4
 
+class NameLenError(Exception): pass
+
 class Node:
     def __init__(self, name):
         self.name = name
         if len(name) > MAX_NAME_LEN:
             print("Name", name, "exceeds max name len")
-            
+            raise NameLenException
         self.children = [None, None]
 
 all_nodes = []
@@ -35,9 +37,11 @@ add_node("312")
 
 # [line_no, above=True, node]
 current_layer = [[0, True, all_nodes[10]]]
+# Current output
 lines = [""]
-# [from, to, pos]
+# [from, to, pos] - Keeps branches linked together
 links = []
+
 new_line = ""
 while len(current_layer) > 0:
     offset = 0
@@ -65,6 +69,8 @@ while len(current_layer) > 0:
         to_insert = new_line+branch_char+name
         pos = node[0]+offset+sub_offset
         addition = 0
+        
+        # Insert Links
         for i in links:
             if i[0] < node[0]+offset+sub_offset <= i[1]:
                 if len(to_insert)-1 >= i[2]:
@@ -85,6 +91,7 @@ while len(current_layer) > 0:
         
         offset += 1
         
+        # Update links for new line
         for i in links:
             if i[0] >= pos:
                 i[0] += 1
